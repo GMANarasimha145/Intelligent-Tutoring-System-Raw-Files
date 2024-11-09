@@ -1,0 +1,220 @@
+Static Content Vs Dynamic Content
+=================================
+Generally, traditional tutoring system follows the static course content provision, that means not all students/learners is unable to grab the concept, Our idea is to generate the content based on the topic name which is input for our system, after content generation and provision to the user, we will collect the user knowledge on the discussed content, then if the user is proven that he is not grasped the content properly, then we will regenerate the content of the topic, This process is then repeated.
+
+Diversity in Perception
+=======================
+As the topic is generated iteratively, there will be many perceptions arise, through which the user can understand the topic in the second or some nth iteration.
+
+Extensive Topics Recommender
+============================
+Whenever the student/learner found that he has sufficent knowledge, then our system will tries to generate some extensive relevant topic names. So that, user can expose his learning capability.
+
+AI Audio in Regional Languages
+==============================
+The content is provided to the user in both text and AI Audio format in various regional languages.
+
+
+INPUT DATA
+==========
+C Programming is a foundational language in the world of computer science and software development. It was developed in the early 1970s by Dennis Ritchie at Bell Labs and has since become one of the most widely used and influential programming languages. Known for its efficiency, flexibility, and portability, C has been the basis for the development of many other languages, including C++, Java, and Python. Its syntax is relatively simple and straightforward, making it an excellent choice for beginners to learn programming concepts. C is often used in system programming, embedded programming, and developing operating systems due to its ability to directly interact with hardware and low-level system components.
+
+One of the key features of C Programming is its powerful support for pointers, which allow developers to directly manipulate memory addresses. While this can be challenging for novice programmers, it offers significant advantages in terms of performance and flexibility. Additionally, C provides a rich set of built-in functions and libraries that facilitate various tasks such as input/output operations, string manipulation, and mathematical computations. Its modular structure encourages the development of reusable code components, promoting code maintainability and scalability. Despite its age, C remains a vital language in the software industry, with applications ranging from embedded systems in consumer electronics to high-performance computing in scientific research. Mastering C Programming not only equips individuals with valuable skills but also fosters a deeper understanding of computer architecture and software development principles.
+
+
+Code
+====
+import pyttsx3
+import time
+import os
+import win32com.client as win32
+from pptx import Presentation  # Import the Presentation class
+
+def split_content_with_threshold(text, threshold):
+    pullstops = text.split('.')
+    result = []
+    chunk = ''
+    for i, pullstop in enumerate(pullstops):
+        chunk += pullstop.strip() + '.'
+        if (i + 1) % threshold == 0:
+            result.append(chunk.strip())
+            chunk = ''
+    if chunk:
+        result.append(chunk.strip())
+    return result
+
+def read_slide_content(text, engine):
+    engine.say(text)
+    engine.runAndWait()
+
+text = """
+C Programming is a foundational language in the world of computer science and software development. It was developed in the early 1970s by Dennis Ritchie at Bell Labs and has since become one of the most widely used and influential programming languages. Known for its efficiency, flexibility, and portability, C has been the basis for the development of many other languages, including C++, Java, and Python. Its syntax is relatively simple and straightforward, making it an excellent choice for beginners to learn programming concepts. C is often used in system programming, embedded programming, and developing operating systems due to its ability to directly interact with hardware and low-level system components.
+
+One of the key features of C Programming is its powerful support for pointers, which allow developers to directly manipulate memory addresses. While this can be challenging for novice programmers, it offers significant advantages in terms of performance and flexibility. Additionally, C provides a rich set of built-in functions and libraries that facilitate various tasks such as input/output operations, string manipulation, and mathematical computations. Its modular structure encourages the development of reusable code components, promoting code maintainability and scalability. Despite its age, C remains a vital language in the software industry, with applications ranging from embedded systems in consumer electronics to high-performance computing in scientific research. Mastering C Programming not only equips individuals with valuable skills but also fosters a deeper understanding of computer architecture and software development principles.
+"""
+
+threshold = 2
+result = split_content_with_threshold(text, threshold)
+
+# Save the content to a text file
+with open('content.txt', 'w') as file:
+    for chunk in result:
+        file.write(chunk + '\n')
+
+# Create a PowerPoint presentation
+prs = Presentation()
+for chunk in result:
+    slide = prs.slides.add_slide(prs.slide_layouts[1])
+    slide.shapes.title.text = 'Chunk'
+    slide.placeholders[1].text = chunk
+pptx_path = r'C:\Practical Freaks\content_chunks.pptx'
+prs.save(pptx_path)
+
+# Create a text-to-speech engine
+engine = pyttsx3.init()
+engine.setProperty('rate', 125)  # Adjust speech rate if necessary
+
+# Start PowerPoint application
+ppt_app = win32.Dispatch("PowerPoint.Application")
+ppt_app.Visible = True
+
+# Open the presentation file
+presentation = ppt_app.Presentations.Open(os.path.abspath(pptx_path))
+
+# Start slideshow
+slide_show = presentation.SlideShowSettings.Run()
+
+# Read the content and display the slides
+for slide_num, chunk in enumerate(result):
+    # Read the chunk aloud
+    read_slide_content(chunk, engine)
+    # Add a pause after reading each chunk
+    time.sleep(len(chunk) / 100)  # Adjust the pause duration if necessary
+    # Go to the next slide
+    slide_show.View.Next()
+
+print("Content read and presentation displayed successfully.")
+
+
+Explanation
+===========
+Sure, I'll explain the code step by step with corresponding code snippets:
+
+1. **Importing Necessary Libraries:**
+   - The code starts by importing required libraries such as `pyttsx3`, `time`, `os`, `win32com.client`, and `pptx`.
+
+   ```python
+   import pyttsx3
+   import time
+   import os
+   import win32com.client as win32
+   from pptx import Presentation
+   ```
+
+2. **Defining Functions:**
+   - Two functions are defined:
+     - `split_content_with_threshold`: This function splits the text content into chunks based on a specified threshold.
+     - `read_slide_content`: This function reads the text content aloud using the text-to-speech engine.
+
+   ```python
+   def split_content_with_threshold(text, threshold):
+       # Function code here...
+
+   def read_slide_content(text, engine):
+       # Function code here...
+   ```
+
+3. **Text Content:**
+   - The text content that needs to be read and displayed in the presentation is defined.
+
+   ```python
+   text = """
+   C Programming is a foundational language...
+   """
+   ```
+
+4. **Splitting Text Content:**
+   - The text content is split into chunks using the `split_content_with_threshold` function.
+
+   ```python
+   threshold = 2
+   result = split_content_with_threshold(text, threshold)
+   ```
+
+5. **Saving Content to a Text File:**
+   - The content chunks are saved to a text file named `content.txt`.
+
+   ```python
+   with open('content.txt', 'w') as file:
+       for chunk in result:
+           file.write(chunk + '\n')
+   ```
+
+6. **Creating PowerPoint Presentation:**
+   - A PowerPoint presentation is created using the `pptx` library.
+   - Slides are added to the presentation, with each chunk of content being added to a separate slide.
+
+   ```python
+   prs = Presentation()
+   for chunk in result:
+       slide = prs.slides.add_slide(prs.slide_layouts[1])
+       slide.shapes.title.text = 'Chunk'
+       slide.placeholders[1].text = chunk
+   ```
+
+7. **Saving the Presentation:**
+   - The presentation is saved to a specified path.
+
+   ```python
+   pptx_path = r'C:\Practical Freaks\content_chunks.pptx'
+   prs.save(pptx_path)
+   ```
+
+8. **Initializing Text-to-Speech Engine:**
+   - The `pyttsx3` library is used to initialize the text-to-speech engine.
+
+   ```python
+   engine = pyttsx3.init()
+   engine.setProperty('rate', 125)  # Adjust speech rate if necessary
+   ```
+
+9. **Starting PowerPoint Application and Opening Presentation:**
+   - The PowerPoint application is started using `win32com.client`.
+   - The presentation file is opened.
+
+   ```python
+   ppt_app = win32.Dispatch("PowerPoint.Application")
+   ppt_app.Visible = True
+   presentation = ppt_app.Presentations.Open(os.path.abspath(pptx_path))
+   ```
+
+10. **Starting Slideshow:**
+    - The slideshow is started using the `SlideShowSettings.Run()` method.
+
+    ```python
+    slide_show = presentation.SlideShowSettings.Run()
+    ```
+
+11. **Reading Content and Displaying Slides:**
+    - Each chunk of content is read aloud using the `read_slide_content` function.
+    - A pause is added after reading each chunk.
+    - The slideshow moves to the next slide after each chunk is read.
+
+    ```python
+    for slide_num, chunk in enumerate(result):
+        # Read the chunk aloud
+        read_slide_content(chunk, engine)
+        # Add a pause after reading each chunk
+        time.sleep(len(chunk) / 100)  # Adjust the pause duration if necessary
+        # Go to the next slide
+        slide_show.View.Next()
+    ```
+
+12. **Print Success Message:**
+    - A success message is printed after the content is read and the presentation is displayed.
+
+    ```python
+    print("Content read and presentation displayed successfully.")
+    ```
+
+This code essentially reads a given text content aloud and displays it as slides in a PowerPoint presentation, allowing for easy presentation of textual information.
